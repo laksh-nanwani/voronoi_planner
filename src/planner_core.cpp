@@ -242,7 +242,15 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
     }
     worldToMap(wx, wy, goal_x, goal_y);
 
-
+    unsigned char cost_goal = costmap_->getCost(goal_x_i, goal_y_i);
+    if (cost_goal == costmap_2d::LETHAL_OBSTACLE || cost_goal == costmap_2d::INSCRIBED_INFLATED_OBSTACLE)
+    {
+        // cached_path_cost_ = -1.0;
+        // throw nav_core2::OccupiedGoalException(goal);
+        ROS_WARN("Planning is failing because the goal is either occupied or inflated.");
+        return false;
+    }
+    
     //clear the starting cell within the costmap because we know it can't be an obstacle
     tf::Stamped<tf::Pose> start_pose;
     tf::poseStampedMsgToTF(start, start_pose);
