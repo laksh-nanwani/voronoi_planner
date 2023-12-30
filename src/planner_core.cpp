@@ -356,6 +356,15 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
         res3 = findPath( &path3, goal_x, goal_y, start_x, start_y, &voronoi_, 0, 1 );
         std::cout << "findPath 3 res " << res3 << std::endl;
         //        goal = path3(end,:);
+
+        // if the goal is not reachable, i.e., it is free but a path doesn't exist
+        if( path3.size() == 0 )
+        {
+        ROS_WARN("No valid path exists to the goal, it is unreachable");
+        return false;
+        }
+
+        // if the goal is reachable
         goal_x = std::get<0>( path3[path3.size()-1] );
         goal_y = std::get<1>( path3[path3.size()-1] );
 
